@@ -9,6 +9,8 @@
 import UIKit
 
 class TableViewCell: UITableViewCell {
+    
+    var movies: Movies!
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -19,6 +21,10 @@ class TableViewCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state
+    }
+    
+    func configureCell(_ movie: Movies) {
+        self.movies = movie
     }
 
 }

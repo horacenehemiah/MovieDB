@@ -16,6 +16,7 @@ class ViewController: UIViewController, UISearchResultsUpdating, UISearchControl
     let searchController = UISearchController(searchResultsController: nil)
     
     var movies = [Movies]()
+    var filteredMovies = [Movies]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,12 +44,13 @@ class ViewController: UIViewController, UISearchResultsUpdating, UISearchControl
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cellIdentifier") as! TableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cellIdentifier", for: indexPath) as! TableViewCell
+        let movie: Movies
         
         if searchController.isActive && searchController.searchBar.text != "" {
-            
+            movie = filteredMovies[indexPath.row]
+            cell.configureCell(movie)
         }
-        
         return cell
     }
     
@@ -78,13 +80,12 @@ class ViewController: UIViewController, UISearchResultsUpdating, UISearchControl
                 
                 do {
                     if let data = data,
-                        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                        let json = try JSONSerialization.jsonObject(with: data) as? Dictionary<String, AnyObject>,
                         let results = json["results"] as? [[String: Any]] {
                         for result in results {
-                            if let movieDictionary = result.values as? Dictionary<String, AnyObject> {
+                            if let movieDictionary = result as? Dictionary<String, AnyObject> {
                                 let movie = Movies(dictionary: movieDictionary)
                                 self.movies.insert(movie, at: 0)
-                                print("movie", movie)
                             }
                         }
                     }
@@ -117,8 +118,8 @@ class ViewController: UIViewController, UISearchResultsUpdating, UISearchControl
     }
     
     func updateSearchResults(for searchController: UISearchController) {
-//        let searchBar = searchController.searchBar
-//        let scope = searchBar.scopeButtonTitles![searchBar.selectedScopeButtonIndex]
+        let searchBar = searchController.searchBar
+        let scope = searchBar.scopeButtonTitles![searchBar.selectedScopeButtonIndex]
 //        filterContentForSearchText(searchController.searchBar.text!, scope: scope)
     }
     
